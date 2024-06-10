@@ -4,6 +4,7 @@ import com.google.cloud.datastore.Key;
 import edu.ecu.cs.seng6285.restfulbots.datastore.TextbookService;
 import edu.ecu.cs.seng6285.restfulbots.models.Textbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -64,10 +65,12 @@ public class TextbookEndpoint {
     public Textbook updateTextbook(@RequestBody Textbook textbook, @PathVariable long textbookId) {
     	 Optional<Textbook> existingTextbook = textbookService.getTextbookById(textbookId);
          if (existingTextbook.isPresent()) {
-             Textbook updatedTextbook = textbookService.updateTextbook(textbookId, textbook);
+             Textbook updatedTextbook = textbookService.updateTextbook(textbookId);
              return updatedTextbook;
-         } else {
-             throw new ResourceNotFoundException("Textbook with id " + textbookId + " not found");
+         } 
+         
+         else {
+             throw new ResourceNotFoundException("The following textbook does not exist: " + textbookId);
          }
     }
 
