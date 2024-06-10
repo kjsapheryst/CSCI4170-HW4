@@ -57,11 +57,21 @@ public class TextbookService {
 
     public Textbook getTextbook(long textbookId) {
         // TODO: Add code to get a textbook by ID here
-
+    	Key key = keyFactory.newKey(textbookId);
+    	Entity entity = datastore.get(key);
+    	
+    	if(entity != null) {
+    		Textbook textbook = entityToTextbook(entity);
+    	}
+    	
+    	else {
+    		return null;
+    	}
         // TODO: Do we need to publish to a topic? If so, add the code here.
 
+    	return textbook;
         // TODO: Remove this once you can return a real object
-        return null;
+        //return null; **removed**
     }
 
     public void deleteTextbook(long textbookId) {

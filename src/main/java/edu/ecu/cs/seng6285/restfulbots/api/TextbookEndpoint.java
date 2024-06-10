@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.*;
+import java.io.*;
 
 @RestController
 @RequestMapping(value = "/textbooks")
@@ -27,30 +29,46 @@ public class TextbookEndpoint {
     @GetMapping(value = "{textbookId}")
     public Textbook getTextbook(@PathVariable long textbookId) {
         // TODO: Add code to get a specific textbook here
-
-        // TODO: Remove this once you can return a real object
-        return null;
+    	//code to find search textbook based on ID
+    	ArrayList<Textbook> a = new ArrayList<Textbook>();
+    	for(int i = 0; i < a.size(); i++) {
+    		Textbook temp = a.get(i);
+    		if(textbookId.equals(temp.getId())) {
+    			System.out.println("Textbook found: " + a);
+    		}
+    		
+    		else { //if textbook is not found, prints error 
+        		System.out.println("Error: Textbook not found.");
+        		System.exit(1);
+        	}
+    	}
+    	
     }
 
     @DeleteMapping(value = "{textbookId}")
     public void deleteTextbook(@PathVariable long textbookId) {
         // TODO: Add code to delete a specific textbook here
+    	textbookService.deleteTextbook(textbookId);
     }
 
     @PostMapping
     public Textbook createTextbook(@RequestBody Textbook textbook) {
         // TODO: Add code to add a new textbook here
-
+    	Key mainKey = textbookService.createTextbook(textbook);
+    	textbook.setId(mainKey.getId());
         // TODO: Remove this once you can return a real object
-        return null;
+    	return textbook;
     }
 
     @PatchMapping(value = "{textbookId}")
     public Textbook updateTextbook(@RequestBody Textbook textbook, @PathVariable long textbookId) {
-        // TODO: Add code to update a specific textbook here
-
-        // TODO: Remove this once you can return a real object
-        return null;
+    	 Optional<Textbook> existingTextbook = textbookService.getTextbookById(textbookId);
+         if (existingTextbook.isPresent()) {
+             Textbook updatedTextbook = textbookService.updateTextbook(textbookId, textbook);
+             return updatedTextbook;
+         } else {
+             throw new ResourceNotFoundException("Textbook with id " + textbookId + " not found");
+         }
     }
 
     @GetMapping(value = "/init")

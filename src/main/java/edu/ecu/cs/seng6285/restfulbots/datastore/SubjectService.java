@@ -44,23 +44,55 @@ public class SubjectService {
 
     public Subject getSubject(long subjectId) {
         // TODO: Add code to get a subject by ID here
-
+    	Key key = keyFactory.newKey(subjectId);
         // TODO: Do we need to publish to a topic? If so, add the code here.
-
+    	Entity entity = datastore.get(key);
         // TODO: Remove this once you can return a real object
-        return null;
+        //return null; **removed**
+    	if(entity != null) {
+    		Subject subject = entityToSubject(entity);
+    		return subject;
+    	}
+    	
+    	else {
+    		return null;
+    	}
     }
 
     public void deleteSubject(long subjectId) {
         // TODO: Add code to delete a subject by ID here
-
+    	Key key = keyFactory.newKey(subjectId);
+    	datastore.delete(key);
         // TODO: Do we need to publish to a topic? If so, add the code here.
+    	//I'm not complete sure if I need this but I'm going to include it just in case
+    	new Publish
+    		.Builder()
+    		.forProject(Topics.PROJECT_ID)
+    		.toTopic(Topics.SUBJECT_DELETED)
+    		.sendId(subjectId)
+    		.build()
+    		.publish();
     }
 
     public void updateSubject(Subject subject) {
         // TODO: Add code to update a subject by ID here
-
+    	Key key = keyFactory.newKey(subject.getId());
+    	Entity entity = datastore.get(key);
+    	
+    	if(entity != null) {
+    		Entity updatedEntity = Entity.newBuilder(key)
+    				.set(Subject.SUBJECT_NAME, subject.getSubjectName())
+    				.build();
+    				datastore.put(updatedEntity);
+    	}
         // TODO: Do we need to publish to a topic? If so, add the code here.
+    	new Publish
+			.Builder()
+			.forProject(Topics.PROJECT_ID)
+			.toTopic(Topics.SUBJECT_UPDATED)
+			.sendId(subject.getId())
+			.build()
+			.publish();
     }
 
     private List<Subject> buildSubjects(Iterator<Entity> entities) {
